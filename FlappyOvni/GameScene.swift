@@ -12,6 +12,7 @@ import GameplayKit
 class GameScene: SKScene {
     
     var ovni: SKSpriteNode?
+    var piso: SKSpriteNode?
     
     var timerTuberia: Timer?
     
@@ -32,6 +33,7 @@ class GameScene: SKScene {
         creaOvni()
         timerTuberia = Timer.scheduledTimer(withTimeInterval: 2, repeats: true,
                                            block: {_ in self.creaTubos()})
+        creaPiso()
     }
     
     func creaOvni(){
@@ -92,6 +94,18 @@ class GameScene: SKScene {
         addChild(tuboSuperior)
         addChild(enMedio)
         addChild(tuboInferior)
+    }
+    
+    func creaPiso(){
+        piso = SKSpriteNode(imageNamed: "piso")
+        piso?.size.width = size.width
+        piso?.physicsBody = SKPhysicsBody(rectangleOf: (piso?.size)!)
+        piso?.physicsBody?.affectedByGravity = false
+        piso?.physicsBody?.pinned = true
+        piso?.physicsBody?.isDynamic = false
+        piso?.zPosition = 1
+        piso?.position = CGPoint(x: 0, y: -size.height*0.5 + (piso?.size.height)!*0.5)
+        addChild(piso!)
     }
     
 }
