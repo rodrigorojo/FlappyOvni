@@ -18,6 +18,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var timerTuberia: Timer?
     
     var puntuacion: Int = 0
+    var perdio:Bool = false
     
     let userDefaults = UserDefaults.standard
     let nombreFuente = "KohinoorBangla-Semibold"
@@ -32,16 +33,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        ovni?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-        ovni?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 60))
-        
+        if !perdio {
+            ovni?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+            ovni?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 60))
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
         if contact.bodyA.categoryBitMask == categoriaObstaculos ||
             contact.bodyB.categoryBitMask == categoriaObstaculos{
-            print("perdiste")
+            self.speed = 0
+            timerTuberia?.invalidate()
+            perdio = true
         }
         if contact.bodyA.categoryBitMask == categoriaPunto ||
             contact.bodyB.categoryBitMask == categoriaPunto{
