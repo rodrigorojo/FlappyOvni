@@ -19,6 +19,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var timerTuberia: Timer?
     
+    let userDefaults = UserDefaults.standard
     let nombreFuente = "KohinoorBangla-Semibold"
     
     let categoriaOvni: UInt32 = 0x01 << 1
@@ -159,5 +160,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         puntuacionEtiqueta?.fontSize = CGFloat(size.height/10)
         puntuacionEtiqueta?.zPosition = 1
         addChild(puntuacionEtiqueta!)
+    }
+    
+    func puntuacionMasAlta(_ puntuacion: Int) -> Int{
+        let nombrePuntuacionAlta = "puntuacionMasAlta"
+        let puntuacionAltaActual = userDefaults.integer(forKey: nombrePuntuacionAlta)
+        if puntuacion > puntuacionAltaActual {
+            userDefaults.set(puntuacion, forKey: nombrePuntuacionAlta)
+        }
+        return userDefaults.integer(forKey: nombrePuntuacionAlta)
     }
 }
