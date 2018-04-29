@@ -9,17 +9,19 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var ovni: SKSpriteNode?
     var piso: SKSpriteNode?
     
     var timerTuberia: Timer?
     
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    let categoriaOvni: UInt32 = 0x01 << 1
+    let categoriaObstaculos: UInt32 = 0x01 << 2
+    let categoriaPunto: UInt32 = 0x01 << 3
     
     override func didMove(to view: SKView) {
+        physicsWorld.contactDelegate = self
         creaJuego()
     }
     
@@ -27,6 +29,25 @@ class GameScene: SKScene {
         ovni?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
         ovni?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 60))
         
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        if contact.bodyA.categoryBitMask == categoriaObstaculos ||
+            contact.bodyB.categoryBitMask == categoriaObstaculos{
+            print("Perdiste")
+        }
+        if contact.bodyA.categoryBitMask == categoriaPunto ||
+            contact.bodyB.categoryBitMask == categoriaPunto{
+            print("+1")
+            if contact.bodyA.categoryBitMask == categoriaOvni{
+                let nodo = contact.bodyB.node as? SKSpriteNode
+                nodo?.removeFromParent()
+            }else{
+                let nodo = contact.bodyA.node as? SKSpriteNode
+                nodo?.removeFromParent()
+            }
+
+        }
     }
     
     func creaJuego(){
@@ -43,6 +64,11 @@ class GameScene: SKScene {
         ovni?.physicsBody = SKPhysicsBody(texture: (ovni?.texture)!, size: (ovni?.size)!)
         ovni?.physicsBody?.allowsRotation = false
         ovni?.physicsBody?.isDynamic = true
+        
+        ovni?.physicsBody?.categoryBitMask = categoriaOvni
+        ovni?.physicsBody?.collisionBitMask = categoriaObstaculos
+        ovni?.physicsBody?.contactTestBitMask = categoriaObstaculos | categoriaPunto
+        
         addChild(ovni!)
     }
     
@@ -61,10 +87,17 @@ class GameScene: SKScene {
         tuboSuperior.physicsBody?.allowsRotation = false
         tuboSuperior.physicsBody?.isDynamic = false
         
+        tuboSuperior.physicsBody?.categoryBitMask = categoriaObstaculos
+        tuboSuperior.physicsBody?.collisionBitMask = categoriaOvni
+        tuboSuperior.physicsBody?.contactTestBitMask = categoriaOvni
+        
         enMedio.isHidden = true
         enMedio.physicsBody = SKPhysicsBody(rectangleOf: enMedio.size)
         enMedio.physicsBody?.affectedByGravity = false
         enMedio.physicsBody?.isDynamic = true
+        
+        enMedio.physicsBody?.categoryBitMask = categoriaPunto
+        enMedio.physicsBody?.contactTestBitMask = categoriaOvni
         
         tuboInferior.size = CGSize(width: anchoTubos, height: altoTubos)
         tuboInferior.physicsBody = SKPhysicsBody(texture: tuboInferior.texture!,
@@ -72,6 +105,10 @@ class GameScene: SKScene {
         tuboInferior.physicsBody?.affectedByGravity = false
         tuboInferior.physicsBody?.allowsRotation = false
         tuboInferior.physicsBody?.isDynamic = false
+        
+        tuboInferior.physicsBody?.categoryBitMask = categoriaObstaculos
+        tuboInferior.physicsBody?.collisionBitMask = categoriaOvni
+        tuboInferior.physicsBody?.contactTestBitMask = categoriaOvni
         
         let inicioX = size.width/2 + anchoTubos
         let numeroAleatorio = CGFloat(arc4random_uniform(UInt32(3)))+2
