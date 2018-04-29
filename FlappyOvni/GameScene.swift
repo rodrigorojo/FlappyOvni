@@ -13,8 +13,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var ovni: SKSpriteNode?
     var piso: SKSpriteNode?
+    var puntuacionEtiqueta: SKLabelNode?
+    
+    var puntuacion: Int = 0
     
     var timerTuberia: Timer?
+    
+    let nombreFuente = "KohinoorBangla-Semibold"
     
     let categoriaOvni: UInt32 = 0x01 << 1
     let categoriaObstaculos: UInt32 = 0x01 << 2
@@ -38,7 +43,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         if contact.bodyA.categoryBitMask == categoriaPunto ||
             contact.bodyB.categoryBitMask == categoriaPunto{
-            print("+1")
             if contact.bodyA.categoryBitMask == categoriaOvni{
                 let nodo = contact.bodyB.node as? SKSpriteNode
                 nodo?.removeFromParent()
@@ -46,7 +50,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let nodo = contact.bodyA.node as? SKSpriteNode
                 nodo?.removeFromParent()
             }
-
+            puntuacion += 1
+            puntuacionEtiqueta?.text = String(puntuacion)
         }
     }
     
@@ -55,6 +60,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         timerTuberia = Timer.scheduledTimer(withTimeInterval: 2, repeats: true,
                                            block: {_ in self.creaTubos()})
         creaPiso()
+        creaEtiqueta()
     }
     
     func creaOvni(){
@@ -145,4 +151,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(piso!)
     }
     
+    func creaEtiqueta(){
+        puntuacionEtiqueta = SKLabelNode(fontNamed: nombreFuente)
+        puntuacionEtiqueta?.text = "0"
+        puntuacionEtiqueta?.position = CGPoint(x: 0, y: size.height/2.7)
+        puntuacionEtiqueta?.color = SKColor.white
+        puntuacionEtiqueta?.fontSize = CGFloat(size.height/10)
+        puntuacionEtiqueta?.zPosition = 1
+        addChild(puntuacionEtiqueta!)
+    }
 }
