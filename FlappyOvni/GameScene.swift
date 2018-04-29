@@ -19,6 +19,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var puntuacion: Int = 0
     var perdio:Bool = false
+    var yaJugo: Bool = false
     
     let userDefaults = UserDefaults.standard
     let nombreFuente = "KohinoorBangla-Semibold"
@@ -29,13 +30,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
-        creaJuego()
+        inicio()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if !perdio {
             ovni?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
             ovni?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 60))
+        } else {
+            let touch = touches.first
+            if let location = touch?.location(in: self) {
+                let theNodes = nodes(at: location)
+                for node in theNodes{
+                    if node.name == "repetir"{
+                        scene?.removeAllChildren()
+                        perdio = false
+                        creaJuego()
+                    }
+                }
+            }
         }
     }
     
@@ -45,6 +58,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.speed = 0
             timerTuberia?.invalidate()
             perdio = true
+            self.removeAllChildren()
+            inicio()
         }
         if contact.bodyA.categoryBitMask == categoriaPunto ||
             contact.bodyB.categoryBitMask == categoriaPunto{
@@ -66,6 +81,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                            block: {_ in self.creaTubos()})
         creaPiso()
         creaEtiqueta()
+        yaJugo = true
     }
     
     func creaOvni(){
@@ -176,5 +192,58 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             userDefaults.set(puntuacion, forKey: nombrePuntuacionAlta)
         }
         return userDefaults.integer(forKey: nombrePuntuacionAlta)
+    }
+    
+    func inicio(){
+        perdio = true
+        let tamFila = size.height/20
+        let titulo = SKLabelNode(fontNamed: nombreFuente)
+        titulo.fontSize = CGFloat(tamFila * 1.5)
+        titulo.text = "Flappy Ovni"
+        titulo.position = CGPoint(x: 0, y: tamFila * 7)
+        titulo.zPosition = 1
+        
+        let valorMasAlta = puntuacionMasAlta(puntuacion)
+        
+        let tituloMasAlta = SKLabelNode(fontNamed: nombreFuente)
+        tituloMasAlta.fontSize = CGFloat(tamFila * 0.8)
+        tituloMasAlta.text = "Puntuación más alta:"
+        tituloMasAlta.position = CGPoint(x: 0, y: tamFila * 3)
+        tituloMasAlta.zPosition = 1
+        
+        let masAlta = SKLabelNode(fontNamed: nombreFuente)
+        masAlta.fontSize = CGFloat(tamFila)
+        masAlta.position = CGPoint(x: 0, y: tamFila * 2)
+        masAlta.text = "\(valorMasAlta)"
+        masAlta.zPosition = 1
+        
+        let tituloPuntuacion = SKLabelNode(fontNamed: nombreFuente)
+        tituloPuntuacion.fontSize = CGFloat(tamFila * 0.8)
+        tituloPuntuacion.text = "Tu puntuación:"
+        tituloPuntuacion.position = CGPoint(x: 0, y: 0)
+        tituloPuntuacion.zPosition = 1
+        
+        let puntos = SKLabelNode(fontNamed: nombreFuente)
+        puntos.fontSize = CGFloat(tamFila)
+        puntos.position = CGPoint(x: 0, y: -tamFila)
+        puntos.text = "\(puntuacion)"
+        puntos.zPosition = 1
+        
+        let boton = SKSpriteNode(imageNamed: "play")
+        boton.name = "repetir"
+        boton.position = CGPoint(x: 0, y: -tamFila * 4)
+        boton.zPosition = 1
+        
+        puntuacion = 0
+        
+        
+        addChild(titulo)
+        addChild(tituloMasAlta)
+        addChild(masAlta)
+        if yaJugo{
+            addChild(tituloPuntuacion)
+            addChild(puntos)
+        }
+        addChild(boton)
     }
 }
