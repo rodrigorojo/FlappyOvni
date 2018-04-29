@@ -57,6 +57,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         if contact.bodyA.categoryBitMask == categoriaObstaculos ||
             contact.bodyB.categoryBitMask == categoriaObstaculos{
+            contact.bodyA.categoryBitMask = 0
+            contact.bodyB.categoryBitMask = 0
             self.speed = 0
             timerTuberia?.invalidate()
             perdio = true
