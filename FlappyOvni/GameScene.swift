@@ -16,6 +16,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var puntuacionEtiqueta: SKLabelNode?
     
     var timerTuberia: Timer?
+    var timerEstrellasHorizontal: Timer?
+    var timerEstrellasVertical: Timer?
     
     var puntuacion: Int = 0
     var perdio:Bool = false
@@ -76,6 +78,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func creaJuego(){
+        creaFondo()
+        timerEstrellasVertical?.invalidate()
+        timerEstrellasHorizontal = Timer.scheduledTimer(withTimeInterval: 0.1,
+                                                        repeats: true,
+                                                        block: { _ in self.creaEstrellasHorizontales() })
         creaOvni()
         timerTuberia = Timer.scheduledTimer(withTimeInterval: 2, repeats: true,
                                            block: {_ in self.creaTubos()})
@@ -195,7 +202,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func inicio(){
+        creaFondo()
+        timerEstrellasHorizontal?.invalidate()
+        timerEstrellasVertical = Timer.scheduledTimer(withTimeInterval: 0.5,
+                                                      repeats: true,
+                                                      block: { _ in self.creaEstrellasVerticales() })
         perdio = true
+        self.speed = 1
+        
         let tamFila = size.height/20
         let titulo = SKLabelNode(fontNamed: nombreFuente)
         titulo.fontSize = CGFloat(tamFila * 1.5)
@@ -236,7 +250,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         puntuacion = 0
         
-        
         addChild(titulo)
         addChild(tituloMasAlta)
         addChild(masAlta)
@@ -246,4 +259,66 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         addChild(boton)
     }
+    
+    func creaFondo(){
+        let fondo = SKSpriteNode(imageNamed: "fondo-azul")
+        fondo.position = CGPoint(x: 0.0, y: 0.0)
+        fondo.zPosition = -2
+        fondo.size = CGSize(width: size.width, height: size.height)
+        addChild(fondo)
+    }
+    
+    func creaEstrellasVerticales(){
+        let numEstrella1 = arc4random_uniform(UInt32(4))+1
+        let numEstrella2 = arc4random_uniform(UInt32(4))+1
+        let estrella1 = SKSpriteNode(imageNamed: "estrella-\(numEstrella1)")
+        let estrella2 = SKSpriteNode(imageNamed: "estrella-\(numEstrella2)")
+        
+        let tamAleatorio = CGFloat(arc4random_uniform(UInt32(20)))+5
+        estrella1.size = CGSize(width: tamAleatorio, height: tamAleatorio)
+        estrella2.size = CGSize(width: tamAleatorio, height: tamAleatorio)
+        
+        let xAleatorio1 = -CGFloat(arc4random_uniform(UInt32(size.width/2)))
+        let xAleatorio2 = CGFloat(arc4random_uniform(UInt32(size.width/2)))
+        estrella1.position = CGPoint(x: xAleatorio1, y: size.height/2)
+        estrella2.position = CGPoint(x: xAleatorio2, y: size.height/2)
+
+        let desplaza = SKAction.moveTo(y: -size.height/2, duration: 6)
+        estrella1.run(SKAction.sequence([desplaza, SKAction.removeFromParent()]))
+        estrella2.run(SKAction.sequence([desplaza, SKAction.removeFromParent()]))
+        
+        estrella1.zPosition = -1
+        estrella2.zPosition = -1
+        
+        addChild(estrella1)
+        addChild(estrella2)
+    }
+    
+    func creaEstrellasHorizontales(){
+        let numEstrella1 = arc4random_uniform(UInt32(4))+1
+        let numEstrella2 = arc4random_uniform(UInt32(4))+1
+        let estrella1 = SKSpriteNode(imageNamed: "estrella-\(numEstrella1)")
+        let estrella2 = SKSpriteNode(imageNamed: "estrella-\(numEstrella2)")
+        
+        let tamAleatorio = CGFloat(arc4random_uniform(UInt32(20)))+5
+        estrella1.size = CGSize(width: tamAleatorio, height: tamAleatorio)
+        estrella2.size = CGSize(width: tamAleatorio, height: tamAleatorio)
+        
+        let yAleatorio1 = CGFloat(arc4random_uniform(UInt32(size.height/2)))
+        let yAleatorio2 = -CGFloat(arc4random_uniform(UInt32(size.height/2)))
+        estrella1.position = CGPoint(x: size.height/2, y: yAleatorio1)
+        estrella2.position = CGPoint(x: size.height/2, y: yAleatorio2)
+        
+        
+        let desplaza = SKAction.moveTo(x: -size.height/2, duration: 5.8)
+        estrella1.run(SKAction.sequence([desplaza, SKAction.removeFromParent()]))
+        estrella2.run(SKAction.sequence([desplaza, SKAction.removeFromParent()]))
+        
+        estrella1.zPosition = -1
+        estrella2.zPosition = -1
+        
+        addChild(estrella1)
+        addChild(estrella2)
+    }
+    
 }
