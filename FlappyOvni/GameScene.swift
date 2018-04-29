@@ -15,9 +15,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var piso: SKSpriteNode?
     var puntuacionEtiqueta: SKLabelNode?
     
-    var puntuacion: Int = 0
-    
     var timerTuberia: Timer?
+    
+    var puntuacion: Int = 0
     
     let userDefaults = UserDefaults.standard
     let nombreFuente = "KohinoorBangla-Semibold"
@@ -32,6 +32,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         ovni?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
         ovni?.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 60))
         
@@ -40,7 +41,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         if contact.bodyA.categoryBitMask == categoriaObstaculos ||
             contact.bodyB.categoryBitMask == categoriaObstaculos{
-            print("Perdiste")
+            print("perdiste")
         }
         if contact.bodyA.categoryBitMask == categoriaPunto ||
             contact.bodyB.categoryBitMask == categoriaPunto{
@@ -149,6 +150,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         piso?.physicsBody?.isDynamic = false
         piso?.zPosition = 1
         piso?.position = CGPoint(x: 0, y: -size.height*0.5 + (piso?.size.height)!*0.5)
+        piso?.physicsBody?.categoryBitMask = categoriaObstaculos
+        piso?.physicsBody?.collisionBitMask = categoriaOvni
+        piso?.physicsBody?.contactTestBitMask = categoriaOvni
         addChild(piso!)
     }
     
