@@ -55,8 +55,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
-        if contact.bodyA.categoryBitMask == categoriaObstaculos ||
-            contact.bodyB.categoryBitMask == categoriaObstaculos{
+        let categorias = [contact.bodyA.categoryBitMask, contact.bodyB.categoryBitMask]
+        
+        if categorias.contains(categoriaObstaculos) && categorias.contains(categoriaObstaculos) {
             contact.bodyA.categoryBitMask = 0
             contact.bodyB.categoryBitMask = 0
             self.speed = 0
@@ -65,8 +66,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.removeAllChildren()
             inicio()
         }
-        if contact.bodyA.categoryBitMask == categoriaPunto ||
-            contact.bodyB.categoryBitMask == categoriaPunto{
+        if categorias.contains(categoriaPunto) && categorias.contains(categoriaPunto) {
             if contact.bodyA.categoryBitMask == categoriaOvni{
                 let nodo = contact.bodyB.node as? SKSpriteNode
                 nodo?.removeFromParent()
